@@ -28,9 +28,9 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-public class City_Adapter extends  RecyclerView.Adapter<City_Adapter.ViewHolder> {
-Context context;
-List<SinhVien> ListSv;
+public class City_Adapter extends RecyclerView.Adapter<City_Adapter.ViewHolder> {
+    Context context;
+    List<SinhVien> ListSv;
 
     public City_Adapter(Context context, List<SinhVien> listcity) {
         this.context = context;
@@ -40,25 +40,25 @@ List<SinhVien> ListSv;
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        LayoutInflater inflater= (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View v=inflater.inflate(R.layout.itemcity,parent,false);
+        LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        View v = inflater.inflate(R.layout.itemcity, parent, false);
         return new ViewHolder(v);
     }
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, @SuppressLint("RecyclerView") int position) {
-        holder.txtname.setText("Name: "+ListSv.get(position).getName());
-        holder.txtmasv.setText("Masv: "+ListSv.get(position).getMasv());
-        holder.txtdiem.setText("AVG: "+ListSv.get(position).getDiemTb()+"");
+        holder.txtname.setText("Name: " + ListSv.get(position).getName());
+        holder.txtmasv.setText("Masv: " + ListSv.get(position).getMasv());
+        holder.txtdiem.setText("AVG: " + ListSv.get(position).getDiemTb() + "");
         holder.imgavarta.setImageResource(R.drawable.fpt);
         holder.imgsua.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                AlertDialog.Builder builder=new AlertDialog.Builder(context);
-                LayoutInflater inflater= (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-                View view= inflater.inflate(R.layout.itemupdate,null);
+                AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                View view = inflater.inflate(R.layout.itemupdate, null);
                 builder.setView(view);
-                Dialog dialog=builder.create();
+                Dialog dialog = builder.create();
                 dialog.show();
 
                 EditText edtname = view.findViewById(R.id.name);
@@ -101,25 +101,30 @@ List<SinhVien> ListSv;
                                         .build();
 
                                 APIservice apiService = retrofit.create(APIservice.class);
-                                Call<List<SinhVien>> call = apiService.updateSinhVien(id, sinhVien);
-                                call.enqueue(new Callback<List<SinhVien>>() {
+                                Call<SinhVien> call = apiService.updateSinhVien(id, sinhVien);
+                                call.enqueue(new Callback<SinhVien>() {
+
+
                                     @Override
-                                    public void onResponse(Call<List<SinhVien>> call, Response<List<SinhVien>> response) {
+                                    public void onResponse(Call<SinhVien> call, Response<SinhVien> response) {
                                         if (response.isSuccessful()) {
-                                            Toast.makeText(context, "Sửa Sinh Viên thành công", Toast.LENGTH_SHORT).show();
+                                            Toast.makeText(context, "Sửa thành công", Toast.LENGTH_SHORT).show();
                                             dialog.dismiss();
+                                            ListSv.get(position).setName(ten);
+                                            ListSv.get(position).setMasv(masv);
+                                            ListSv.get(position).setDiemTb(diem);
+                                            notifyDataSetChanged();
                                         } else {
-                                            Toast.makeText(context, "Sửa Sinh Viên thất bại", Toast.LENGTH_SHORT).show();
+                                            Toast.makeText(context, "Sửa thất bại", Toast.LENGTH_SHORT).show();
                                         }
                                     }
 
                                     @Override
-                                    public void onFailure(Call<List<SinhVien>> call, Throwable t) {
+                                    public void onFailure(Call<SinhVien> call, Throwable t) {
                                         Toast.makeText(context, "Lỗi kết nối", Toast.LENGTH_SHORT).show();
                                         Log.e("City_Adapter", "Error updating sinh vien", t);
+
                                     }
-
-
                                 });
                             }
                         });
@@ -144,6 +149,7 @@ List<SinhVien> ListSv;
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         String id = ListSv.get(position).getId();
+                        Toast.makeText(context, id + "", Toast.LENGTH_SHORT).show();
                         // Gửi yêu cầu xóa sinh viên đến máy chủ
                         Retrofit retrofit = new Retrofit.Builder()
                                 .baseUrl(APIservice.DOMAIN)
@@ -151,27 +157,28 @@ List<SinhVien> ListSv;
                                 .build();
 
                         APIservice apiService = retrofit.create(APIservice.class);
-                        Call<List<SinhVien>> call = apiService.deleteSinhVien(id);
-                        call.enqueue(new Callback<List<SinhVien>>() {
+                        Call<SinhVien> call = apiService.deleteSinhVien(id);
+                        call.enqueue(new Callback<SinhVien>() {
+
+
                             @Override
-                            public void onResponse(Call<List<SinhVien>> call, Response<List<SinhVien>> response) {
+                            public void onResponse(Call<SinhVien> call, Response<SinhVien> response) {
                                 if (response.isSuccessful()) {
-                                    Toast.makeText(context, "Xóa sinh viên thành công", Toast.LENGTH_SHORT).show();
-                                    // Xóa sinh viên khỏi danh sách và cập nhật RecyclerView
+                                    Toast.makeText(context, "Xóa thành công", Toast.LENGTH_SHORT).show();
                                     ListSv.remove(position);
-                                    notifyItemRemoved(position);
-                                    notifyItemRangeChanged(position, ListSv.size());
+                                    notifyDataSetChanged();
                                 } else {
-                                    Toast.makeText(context, "Xóa sinh viên thất bại", Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(context, "Xóa thất bại", Toast.LENGTH_SHORT).show();
                                 }
                             }
 
                             @Override
-                            public void onFailure(Call<List<SinhVien>> call, Throwable t) {
+                            public void onFailure(Call<SinhVien> call, Throwable t) {
+
                                 Toast.makeText(context, "Lỗi kết nối", Toast.LENGTH_SHORT).show();
                                 Log.e("City_Adapter", "Error deleting sinh vien", t);
-                            }
 
+                            }
                         });
                     }
                 });
@@ -192,20 +199,20 @@ List<SinhVien> ListSv;
         return ListSv.size();
     }
 
-    public  class ViewHolder extends RecyclerView.ViewHolder {
-        TextView txtname,txtmasv,txtdiem;
-        ImageView imgavarta,imgsua,imgxoa;
+    public class ViewHolder extends RecyclerView.ViewHolder {
+        TextView txtname, txtmasv, txtdiem;
+        ImageView imgavarta, imgsua, imgxoa;
+
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
-            txtname=itemView.findViewById(R.id.txtname);
-            txtmasv=itemView.findViewById(R.id.txtmasv);
-            txtdiem=itemView.findViewById(R.id.txtDiemtb);
-            imgavarta=itemView.findViewById(R.id.imgavata);
-            imgsua=itemView.findViewById(R.id.imgsua);
-            imgxoa=itemView.findViewById(R.id.imgxoa);
+            txtname = itemView.findViewById(R.id.txtname);
+            txtmasv = itemView.findViewById(R.id.txtmasv);
+            txtdiem = itemView.findViewById(R.id.txtDiemtb);
+            imgavarta = itemView.findViewById(R.id.imgavata);
+            imgsua = itemView.findViewById(R.id.imgsua);
+            imgxoa = itemView.findViewById(R.id.imgxoa);
         }
     }
-
 
 
 }

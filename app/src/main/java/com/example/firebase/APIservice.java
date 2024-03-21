@@ -11,7 +11,7 @@ import retrofit2.http.PUT;
 import retrofit2.http.Path;
 
 public interface APIservice {
-    String DOMAIN = "http://192.168.1.57:3000/";
+    String DOMAIN = "http://192.168.54.102:3000/";
 
     @GET("/api/list")
     Call<List<SinhVien>> getSinhVien();
@@ -19,7 +19,7 @@ public interface APIservice {
     @POST("/api/addSinhVien")
     Call<List<SinhVien>> addSinhVien(@Body SinhVien sinhVien);
     @PUT("/api/updateSinhVien/{id}")
-    Call<List<SinhVien>> updateSinhVien(@Path("id") String id, @Body SinhVien sinhVien);
+    Call<SinhVien> updateSinhVien(@Path("id") String id, @Body SinhVien sinhVien);
     @DELETE("/api/deleteSinhVien/{id}")
-    Call<List<SinhVien>> deleteSinhVien(@Path("id") String id);
+    Call<SinhVien> deleteSinhVien(@Path("id") String id);
 }

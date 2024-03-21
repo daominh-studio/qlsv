@@ -1,6 +1,9 @@
 package com.example.firebase;
 
+import com.google.gson.annotations.SerializedName;
+
 public class SinhVien {
+    @SerializedName("_id")
     private  String id;
     private String name;
     private String Masv;
